@@ -20,7 +20,7 @@ try {
       issue_number: pullRequest.number,
     });
 
-    const existingComment = comments.find((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(signiture) && comment.body.includes(`runId: ${context.runId}`));
+    const existingComment = comments.find((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(signiture) && comment.body.includes(`sha: ${context.sha}`));
   
     if (existingComment) {
 
@@ -39,7 +39,7 @@ try {
   
 - ${testId}
 
-runId: ${context.runId}
+sha: ${context.sha}
 ${signiture}`;
       await octokit.rest.issues.createComment({
         owner: context.repo.owner,

@@ -9601,7 +9601,7 @@ try {
       issue_number: pullRequest.number,
     });
 
-    const existingComment = comments.find((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(_lib_constants_js__WEBPACK_IMPORTED_MODULE_3__/* .signiture */ .o) && comment.body.includes(`runId: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.runId}`));
+    const existingComment = comments.find((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(_lib_constants_js__WEBPACK_IMPORTED_MODULE_3__/* .signiture */ .o) && comment.body.includes(`sha: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha}`));
   
     if (existingComment) {
 
@@ -9620,7 +9620,7 @@ try {
   
 - ${testId}
 
-runId: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.runId}
+sha: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.sha}
 ${_lib_constants_js__WEBPACK_IMPORTED_MODULE_3__/* .signiture */ .o}`;
       await octokit.rest.issues.createComment({
         owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
