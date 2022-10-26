@@ -1,43 +1,55 @@
 import { getInput, setFailed } from '@actions/core';
-
 import { getOctokit, context } from '@actions/github';
 
-export async function getPullRequest(context, octokit) {
-  const pr = context.payload.pull_request;
+import getPullRequest from './lib/get-pull-request.js';
 
-  if (!pr) {
-    console.log('Could not get pull request number from context, exiting');
-    return;
-  }
-
-  const { data: pullRequest } = await octokit.rest.pulls.get({
-    owner: pr.base.repo.owner.login,
-    repo: pr.base.repo.name,
-    pull_number: pr.number,
-  });
-
-  return pullRequest;
-}
+import { signiture } from './lib/constants.js';
 
 try {
   const myToken = getInput('repo-token', { required: true });
-  const exitCode = getInput('exit-code', { required: false });
   const outcome = getInput('outcome', { required: true });
+  const testId = getInput('test-id', { required: true });
 
-  const body = `This is from an action!!
+  if (outcome === 'failure') {
+    const octokit = getOctokit(myToken);
+    const pullRequest = await getPullRequest(context, octokit);
+  
+    const { data: comments } = await octokit.rest.issues.listComments({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: pullRequest.number,
+    });
 
-Your exit_code is: ${exitCode}
-Your outcome is: ${outcome}`;
+    const existingComment = comments.find((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(signiture) && comment.body.includes(`runId: ${context.runId}`));
+  
+    if (existingComment) {
 
-  const octokit = getOctokit(myToken);
-  const pullRequest = await getPullRequest(context, octokit);
+      let body = existingComment.body.split('\n');
 
-  await octokit.rest.issues.createComment({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    issue_number: pullRequest.number,
-    body,
-  });
+      body.splice(body.length - 3, 0, `- ${testId}`);
+
+      await octokit.rest.issues.updateComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        comment_id: existingComment.id,
+        body: body.join('\n'),
+      });
+    } else {
+      const body = `Some tests with 'continue-on-error: true' have failed: 
+  
+- ${testId}
+
+runId: ${context.runId}
+${signiture}`;
+      await octokit.rest.issues.createComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: pullRequest.number,
+        body,
+      });
+    }
+  }
+
 } catch (error) {
   setFailed(error.message);
 }

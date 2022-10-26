@@ -9571,74 +9571,6 @@ module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
 
 /***/ }),
 
-/***/ 1378:
-/***/ ((__webpack_module__, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
-
-__nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependencies__) => {
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(5438);
-/* harmony import */ var _lib_get_pull_request_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(6343);
-/* harmony import */ var _lib_constants_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(1046);
-
-
-
-
-
-
-
-try {
-  const myToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('repo-token', { required: true });
-  const outcome = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('outcome', { required: true });
-  const testId = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('test-id', { required: true });
-
-  if (outcome === 'failure') {
-    const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(myToken);
-    const pullRequest = await (0,_lib_get_pull_request_js__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z)(_actions_github__WEBPACK_IMPORTED_MODULE_1__.context, octokit);
-  
-    const { data: comments } = await octokit.rest.issues.listComments({
-      owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
-      repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
-      issue_number: pullRequest.number,
-    });
-
-    const existingComment = comments.find((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(_lib_constants_js__WEBPACK_IMPORTED_MODULE_3__/* .signiture */ .o) && comment.body.includes(`runId: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.runId}`));
-  
-    if (existingComment) {
-
-      let body = existingComment.body.split('\n');
-
-      body.splice(body.length - 3, 0, `- ${testId}`);
-
-      await octokit.rest.issues.updateComment({
-        owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
-        repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
-        comment_id: existingComment.id,
-        body: body.join('\n'),
-      });
-    } else {
-      const body = `Some tests with 'continue-on-error: true' have failed: 
-  
-- ${testId}
-
-runId: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.runId}
-${_lib_constants_js__WEBPACK_IMPORTED_MODULE_3__/* .signiture */ .o}`;
-      await octokit.rest.issues.createComment({
-        owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
-        repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
-        issue_number: pullRequest.number,
-        body,
-      });
-    }
-  }
-
-} catch (error) {
-  (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
-}
-__webpack_handle_async_dependencies__();
-}, 1);
-
-/***/ }),
-
 /***/ 1046:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
@@ -9671,6 +9603,53 @@ async function getPullRequest(context, octokit) {
 
   return pullRequest;
 }
+
+/***/ }),
+
+/***/ 3633:
+/***/ ((__webpack_module__, __unused_webpack___webpack_exports__, __nccwpck_require__) => {
+
+__nccwpck_require__.a(__webpack_module__, async (__webpack_handle_async_dependencies__) => {
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2186);
+/* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(5438);
+/* harmony import */ var _lib_get_pull_request_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(6343);
+/* harmony import */ var _lib_constants_js__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(1046);
+
+
+
+
+
+
+
+try {
+  const myToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('repo-token', { required: true });
+
+  const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(myToken);
+  const pullRequest = await (0,_lib_get_pull_request_js__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z)(_actions_github__WEBPACK_IMPORTED_MODULE_1__.context, octokit);
+
+  const { data: comments } = await octokit.rest.issues.listComments({
+    owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
+    repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
+    issue_number: pullRequest.number,
+  });
+
+  
+  const oldComments = comments.filter((comment) => comment.user.login === 'github-actions[bot]' && comment.body.endsWith(_lib_constants_js__WEBPACK_IMPORTED_MODULE_3__/* .signiture */ .o) && !comment.body.includes(`runId: ${_actions_github__WEBPACK_IMPORTED_MODULE_1__.context.runId}`));
+  if(oldComments.length){
+    const promises = oldComments.map(oldComment=>octokit.rest.issues.deleteComment({
+      owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
+      repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
+      comment_id: oldComment.id,
+    }));
+
+    await Promise.all(promises);
+  }
+  
+} catch (error) {
+  (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
+}
+__webpack_handle_async_dependencies__();
+}, 1);
 
 /***/ }),
 
@@ -9814,6 +9793,6 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ // startup
 /******/ // Load entry module and return exports
 /******/ // This entry module used 'module' so it can't be inlined
-/******/ var __webpack_exports__ = __nccwpck_require__(1378);
+/******/ var __webpack_exports__ = __nccwpck_require__(3633);
 /******/ __webpack_exports__ = await __webpack_exports__;
 /******/ 
