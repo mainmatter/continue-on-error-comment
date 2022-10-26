@@ -9646,7 +9646,8 @@ try {
   }
   
 } catch (error) {
-  (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
+  // we want to ignore any failure at this stage but we will log it in case we need to debug something
+  console.log(error.message);
 }
 __webpack_handle_async_dependencies__();
 }, 1);

@@ -1,4 +1,4 @@
-import { getInput, setFailed } from '@actions/core';
+import { getInput } from '@actions/core';
 import { getOctokit, context } from '@actions/github';
 
 import getPullRequest from './lib/get-pull-request.js';
@@ -30,5 +30,6 @@ try {
   }
   
 } catch (error) {
-  setFailed(error.message);
+  // we want to ignore any failure at this stage but we will log it in case we need to debug something
+  console.log(error.message);
 }
