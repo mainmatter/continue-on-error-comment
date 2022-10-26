@@ -1,0 +1,8 @@
+name: 'continue-on-error Comment'
+description: 'GitHub action to add comment when a continue-on-error job fails'
+inputs:
+  repo-token:
+    description: 'The GITHUB_TOKEN secret'
+runs:
+  using: 'node16'
+  main: 'index.js'
