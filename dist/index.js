@@ -9603,7 +9603,7 @@ async function getPullRequest(context, octokit) {
 
 try {
   const myToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('repo-token', { required: true });
-  const exitCode = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('exit-code', { required: true });
+  const exitCode = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('exit-code', { required: false });
   const outcome = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('outcome', { required: true });
 
   const body = `This is from an action!!

@@ -21,7 +21,7 @@ export async function getPullRequest(context, octokit) {
 
 try {
   const myToken = getInput('repo-token', { required: true });
-  const exitCode = getInput('exit-code', { required: true });
+  const exitCode = getInput('exit-code', { required: false });
   const outcome = getInput('outcome', { required: true });
 
   const body = `This is from an action!!
