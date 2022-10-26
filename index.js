@@ -20,8 +20,15 @@ export async function getPullRequest(context, octokit) {
 }
 
 try {
-  const body = `This is from an action!!`;
   const myToken = getInput('repo-token', { required: true });
+  const exitCode = getInput('exit-code', { required: true });
+  const outcome = getInput('outcome', { required: true });
+
+  const body = `This is from an action!!
+
+Your exit_code is: ${exitCode}
+Your outcome is: ${outcome}`;
+
   const octokit = getOctokit(myToken);
   const pullRequest = await getPullRequest(context, octokit);
 

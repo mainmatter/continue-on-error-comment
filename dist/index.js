@@ -9601,19 +9601,28 @@ async function getPullRequest(context, octokit) {
   return pullRequest;
 }
 
-const body = `This is from an action!!`;
+try {
+  const myToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('repo-token', { required: true });
+  const exitCode = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('exit-code', { required: true });
+  const outcome = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('outcome', { required: true });
 
+  const body = `This is from an action!!
 
-const myToken = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput)('repo-token', { required: true });
-const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(myToken);
-const pullRequest = await getPullRequest(_actions_github__WEBPACK_IMPORTED_MODULE_1__.context, octokit);
+Your exit_code is: ${exitCode}
+Your outcome is: ${outcome}`;
 
-await octokit.rest.issues.createComment({
-  owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
-  repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
-  issue_number: pullRequest.number,
-  body,
-});
+  const octokit = (0,_actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit)(myToken);
+  const pullRequest = await getPullRequest(_actions_github__WEBPACK_IMPORTED_MODULE_1__.context, octokit);
+
+  await octokit.rest.issues.createComment({
+    owner: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.owner,
+    repo: _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.repo.repo,
+    issue_number: pullRequest.number,
+    body,
+  });
+} catch (error) {
+  (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(error.message);
+}
 __webpack_handle_async_dependencies__();
 }, 1);
 
