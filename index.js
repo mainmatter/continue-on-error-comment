@@ -1,4 +1,4 @@
-import { getInput } from '@actions/core';
+import { getInput, setFailed } from '@actions/core';
 
 import { getOctokit, context } from '@actions/github';
 
@@ -19,16 +19,18 @@ export async function getPullRequest(context, octokit) {
   return pullRequest;
 }
 
-const body = `This is from an action!!`;
+try {
+  const body = `This is from an action!!`;
+  const myToken = getInput('repo-token', { required: true });
+  const octokit = getOctokit(myToken);
+  const pullRequest = await getPullRequest(context, octokit);
 
-
-const myToken = getInput('repo-token', { required: true });
-const octokit = getOctokit(myToken);
-const pullRequest = await getPullRequest(context, octokit);
-
-await octokit.rest.issues.createComment({
-  owner: context.repo.owner,
-  repo: context.repo.repo,
-  issue_number: pullRequest.number,
-  body,
-});
+  await octokit.rest.issues.createComment({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: pullRequest.number,
+    body,
+  });
+} catch (error) {
+  setFailed(error.message);
+}
