@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "build": "ncc build index.js"
+    "build": "ncc build index.js && ncc build -o pre-dist pre.js"
   },
   "repository": {
     "type": "git",
