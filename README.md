@@ -2,6 +2,10 @@
 
 This action allows you to use continue-on-error with you existing GitHub Actions, but without any faiures getting hidden behind a green tick ✅ When a test that is marked as `continue-on-failure: true` actually fails, this action will add a comment to the PR to tell you that it failed.
 
+Here is what an example comment looks like: 
+
+![example-screenshot](https://user-images.githubusercontent.com/594890/198069222-9096eb74-4e0d-489d-935f-d353ba58f59a.png)
+
 This action is useful because GitHub doesn't allow you to effectively mark a job as "allow failure" without hiding the status of that job. For more information about the problem you can follow [this GitHub Issue discussion](https://github.com/actions/toolkit/issues/399)
 
 ## Usage
